@@ -13,14 +13,10 @@ RUN apt-get update && apt-get install -y \
     && pecl install amqp \
     && docker-php-ext-enable amqp
 
-# Enable needed Apache modules
 RUN a2enmod rewrite
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy PHP files
 COPY . /var/www/html/
 
-# Apache configuration
 RUN chown -R www-data:www-data /var/www/html
