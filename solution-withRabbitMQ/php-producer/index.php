@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// RabbitMQ connection parameters
+// RabbitMQ connection parameters PLAIN TEXT please don't be upset this is for test purposes :) !
 $rabbitmq_host = '52.143.169.216';
 $rabbitmq_port = 5672;
 $rabbitmq_user = 'upworkUser';
@@ -32,7 +32,7 @@ try {
     // Declare queue
     $queue = new AMQPQueue($channel);
     $queue->setName('upworkQueue');
-    $queue->setFlags(AMQP_DURABLE); // Make queue durable
+    $queue->setFlags(AMQP_DURABLE); 
     $queue->declare();
     
     // Bind queue to exchange
@@ -67,7 +67,7 @@ try {
         ]);
         
         echo "Published message $counter of $total_messages (1000 records)<br>";
-        flush(); // Force output buffer to flush
+        flush(); 
     }
     
     echo "All messages published successfully! Total messages: $counter<br>";
