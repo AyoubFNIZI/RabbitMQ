@@ -1,0 +1,24 @@
+version: '3'
+
+networks:
+  upwork-network:
+    name: upwork-network
+
+services:
+  ext-api:
+    image: ext-api-image
+    container_name: ext-api
+    networks:
+      - upwork-network
+    ports:
+      - "8000:8000"
+
+  php-app:
+    image: php-app-image
+    container_name: php-app
+    networks:
+      - upwork-network
+    ports:
+      - "80:80"
+    depends_on:
+      - ext-api

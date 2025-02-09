@@ -1,0 +1,94 @@
+---
+- name: Setup RabbitMQ Demo Environment
+  hosts: localhost
+  become: yes
+  tasks:
+    # Update system
+    - name: Update dnf cache
+      dnf:
+        update_cache: yes
+
+    # Install system dependencies
+    - name: Install EPEL repository
+      dnf:
+        name: epel-release
+        state: present
+
+    # Install system packages
+    - name: Install system packages
+      dnf:
+        name:
+          - net-tools
+          - curl
+          - python3-pip
+          - python3-devel
+          - postgresql
+          - postgresql-server
+          - postgresql-contrib
+          - php
+          - php-pgsql
+          - php-curl
+          - python3-psycopg2 
+        state: present
+
+    # Install Docker
+    - name: Add Docker repository
+      command: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: Install Docker packages
+      dnf:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    # Start and enable Docker
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    # Initialize PostgreSQL
+    - name: Initialize PostgreSQL database
+      command: postgresql-setup --initdb
+      args:
+        creates: /var/lib/pgsql/data/postgresql.conf
+
+    # Start PostgreSQL
+    - name: Start PostgreSQL service
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+
+    # Configure PostgreSQL
+    - name: Create PostgreSQL user
+      become_user: postgres
+      postgresql_user:
+        name: upwork-user
+        password: upwork-pass
+        role_attr_flags: CREATEDB,LOGIN
+
+    - name: Create PostgreSQL database
+      become_user: postgres
+      postgresql_db:
+        name: upwork-db
+        owner: upwork-user
+
+    # Install Python dependencies
+    - name: Install Python packages
+      pip:
+        name:
+          - fastapi
+          - uvicorn
+          - psycopg2-binary
+        state: present
+
+    # Install Docker Compose
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'

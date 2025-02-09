@@ -1,0 +1,14 @@
+version: '3'
+
+networks:
+  upwork-network:
+    name: upwork-network
+
+services:
+  python-consumer:
+    build: .  
+    image: consumer-image
+    container_name: python-consumer
+    networks:
+      - upwork-network
+    restart: unless-stopped  
