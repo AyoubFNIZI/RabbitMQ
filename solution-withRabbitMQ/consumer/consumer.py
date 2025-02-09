@@ -26,7 +26,7 @@ def process_message(ch, method, properties, body):
         batch_number = message['batch_number']
         records = message['records']
         
-        # Connect to PostgreSQL
+        # Connect to PSQL
         with psycopg2.connect(**pg_params) as conn:
             with conn.cursor() as cur:
                 # Prepare data for batch insert
@@ -48,11 +48,11 @@ def process_message(ch, method, properties, body):
         ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
 
 def main():
-    # Connect to RabbitMQ
+    # Connect to brekr RabbitQM
     connection = pika.BlockingConnection(rabbitmq_params)
     channel = connection.channel()
     
-    # Declare queue (same as producer)
+    # Declare queue
     channel.queue_declare(queue='upworkQueue', durable=True)
     
     # Set QoS (prefetch_count=1 means process one message at a time)
